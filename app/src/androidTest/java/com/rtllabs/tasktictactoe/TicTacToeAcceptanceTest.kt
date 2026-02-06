@@ -1,6 +1,7 @@
 package com.rtllabs.tasktictactoe
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -55,11 +56,67 @@ class TicTacToeAcceptanceTest {
 
     //A game is over when all fields in a row are taken by a player
 
+    @Test
+    fun givenPlayerCompletesRowWhenGameEndsThenPlayerWins() {
+        launchGame()
+
+        composeRule.onNodeWithTag("cell_0_0").performClick() // X
+        composeRule.onNodeWithTag("cell_1_0").performClick() // O
+        composeRule.onNodeWithTag("cell_0_1").performClick() // X
+        composeRule.onNodeWithTag("cell_1_1").performClick() // O
+        composeRule.onNodeWithTag("cell_0_2").performClick() // X
+
+        composeRule.onNodeWithText("Winner: X").assertIsDisplayed()
+    }
+
     //A game is over when all fields in a diagonal are taken by a player
 
+    @Test
+    fun givenPlayerCompletesDiagonalWhenGameEndsThenPlayerWins() {
+        launchGame()
+
+        composeRule.onNodeWithTag("cell_0_0").performClick() // X
+        composeRule.onNodeWithTag("cell_0_1").performClick() // O
+        composeRule.onNodeWithTag("cell_1_1").performClick() // X
+        composeRule.onNodeWithTag("cell_0_2").performClick() // O
+        composeRule.onNodeWithTag("cell_2_2").performClick() // X
+
+        composeRule.onNodeWithText("Winner: X").assertIsDisplayed()
+    }
+
+
     //A player can take a field if not already taken
+    @Test
+    fun givenPlayersAlternateTurnsWhenGameInProgressThenTurnsSwitchCorrectly() {
+        launchGame()
+
+        composeRule.onNodeWithTag("cell_0_0").performClick() // X
+        composeRule.onNodeWithTag("cell_0_1").performClick() // O
+
+        composeRule.onNodeWithTag("cell_0_0").assertTextEquals("X")
+        composeRule.onNodeWithTag("cell_0_1").assertTextEquals("O")
+    }
 
     //No moves allowed after game is over
+
+    @Test
+    fun givenGameIsOverWhenPlayerClicksCellThenBoardDoesNotChange() {
+        launchGame()
+
+
+        composeRule.onNodeWithTag("cell_0_0").performClick()
+        composeRule.onNodeWithTag("cell_1_0").performClick()
+        composeRule.onNodeWithTag("cell_0_1").performClick()
+        composeRule.onNodeWithTag("cell_1_1").performClick()
+        composeRule.onNodeWithTag("cell_0_2").performClick()
+
+        composeRule.onNodeWithTag("cell_2_2").performClick()//Added extra click after game over
+
+        composeRule.onNodeWithText("Winner: X").assertIsDisplayed()
+        composeRule
+            .onNodeWithTag("cell_2_2")
+            .assertTextEquals("")
+    }
 
 
 
